@@ -6,11 +6,8 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
-// Seeed Studio PN532 library (https://github.com/Seeed-Studio/PN532).
-// PlatformIO adds each source subdirectory to the include path, so flat
-// includes (without the folder prefix) are required.
-#include <PN532.h>
-#include <PN532_SPI.h>
+// Adafruit PN532 library — flat single-directory structure, no LDF issues.
+#include <Adafruit_PN532.h>
 
 #include <string>
 
@@ -42,8 +39,7 @@ class PN532SpiComponent : public PollingComponent {
   InternalGPIOPin *miso_pin_{nullptr};
   InternalGPIOPin *mosi_pin_{nullptr};
 
-  PN532_SPI *pn532_spi_{nullptr};
-  PN532 *nfc_{nullptr};
+  Adafruit_PN532 *nfc_{nullptr};
 
   bool initialized_{false};
   bool tag_present_{false};

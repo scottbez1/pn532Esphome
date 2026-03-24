@@ -65,5 +65,6 @@ async def to_code(config):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(trigger, [], conf)
 
-    # Seeed Studio PN532 Arduino library
-    cg.add_library("https://github.com/Seeed-Studio/PN532", None)
+    # Adafruit PN532 library — flat layout, no PlatformIO LDF issues.
+    # BusIO is pulled in automatically as a declared dependency.
+    cg.add_library("adafruit/Adafruit PN532", None)

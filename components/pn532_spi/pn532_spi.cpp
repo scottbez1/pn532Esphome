@@ -13,6 +13,10 @@ static const uint16_t POLL_TIMEOUT_MS = 100;
 void PN532SpiComponent::setup() {
   uint8_t cs = this->cs_pin_->get_pin();
 
+  // Initialise the SPI bus with the user-configured pins before the Adafruit
+  // driver calls SPI.begin() internally (which would otherwise use board
+  // defaults).  On ESP32 SPI.begin() is idempotent once called, so the
+  // subsequent call inside Adafruit_PN532::begin() is a safe no-op.
 #if defined(ARDUINO_ARCH_ESP32) || defined(ESP32)
   SPI.begin(
       static_cast<int>(this->clk_pin_->get_pin()),
@@ -23,8 +27,7 @@ void PN532SpiComponent::setup() {
   SPI.begin();
 #endif
 
-  this->pn532_spi_ = new PN532_SPI(SPI, cs);
-  this->nfc_ = new PN532(*this->pn532_spi_);
+  this->nfc_ = new Adafruit_PN532(cs, &SPI);
 
   this->nfc_->begin();
 

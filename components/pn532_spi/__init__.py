@@ -65,6 +65,8 @@ async def to_code(config):
         trigger = cg.new_Pvariable(conf[CONF_TRIGGER_ID], var)
         await automation.build_automation(trigger, [], conf)
 
-    # Adafruit PN532 library — flat layout, no PlatformIO LDF issues.
-    # BusIO is pulled in automatically as a declared dependency.
+    # Adafruit BusIO is a required dep of Adafruit PN532 but ESPHome's
+    # chain+ LDF does not resolve library.properties transitive deps
+    # automatically, so we declare both explicitly.
+    cg.add_library("adafruit/Adafruit BusIO", None)
     cg.add_library("adafruit/Adafruit PN532", None)

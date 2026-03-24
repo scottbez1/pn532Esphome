@@ -251,7 +251,6 @@ void PN532SpiComponent::update() {
 
 void PN532SpiComponent::dump_config() {
   ESP_LOGCONFIG(TAG, "PN532 SPI:");
-  LOG_PIN("  CS Pin: ", this->cs_pin_);
   LOG_UPDATE_INTERVAL(this);
 }
 

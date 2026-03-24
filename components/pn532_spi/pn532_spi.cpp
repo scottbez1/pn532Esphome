@@ -203,10 +203,22 @@ bool PN532SpiComponent::cmd_read_passive_target_(uint8_t *uid, uint8_t &uid_len)
 
 void PN532SpiComponent::setup() {
   this->spi_setup();
-  delay(10);  // let the chip wake up
+
+  // PN532 datasheet §7.2.1: after power-on the chip needs up to 400 ms before
+  // its SPI interface is ready.  10 ms is too short on cold boot.
+  delay(400);
+
+  // Send a dummy SPI_STATREAD to clock the PN532's SPI state machine out of
+  // any transient state it may be in after reset/power-on.
+  this->enable();
+  this->transfer_byte(SPI_STATREAD);
+  this->transfer_byte(0x00);
+  this->disable();
+  delay(10);
 
   if (!cmd_get_firmware_version_()) {
-    ESP_LOGE(TAG, "PN532 not found — check wiring and CS pin");
+    ESP_LOGE(TAG, "PN532 not found — check SPI wiring and that the PN532 is "
+                  "strapped for SPI mode (SEL0=L, SEL1=H)");
     this->mark_failed();
     return;
   }

@@ -101,9 +101,10 @@ bool PN532SpiComponent::read_response_(uint8_t cmd, uint8_t *buf, uint8_t max_le
   this->transfer_byte(SPI_DATAREAD);
 
   // Validate preamble + start code
-  bool frame_ok = (this->transfer_byte(0) == PREAMBLE) &&
-                  (this->transfer_byte(0) == PREAMBLE) &&
-                  (this->transfer_byte(0) == STARTCODE2);
+  uint8_t pre0    = this->transfer_byte(0);
+  uint8_t pre1    = this->transfer_byte(0);
+  uint8_t start2  = this->transfer_byte(0);
+  bool frame_ok = (pre0 == PREAMBLE) && (pre1 == PREAMBLE) && (start2 == STARTCODE2);
 
   uint8_t length = this->transfer_byte(0);
   uint8_t lcs    = this->transfer_byte(0);
@@ -217,19 +218,15 @@ void PN532SpiComponent::setup() {
   delay(10);
 
   if (!cmd_get_firmware_version_()) {
-    ESP_LOGE(TAG, "PN532 not found — check SPI wiring and that the PN532 is "
-                  "strapped for SPI mode (SEL0=L, SEL1=H)");
-    this->mark_failed();
+    this->mark_failed(LOG_STR("PN532 not found — check SPI wiring and that the module is strapped for SPI mode"));
     return;
   }
   if (!cmd_sam_config_()) {
-    ESP_LOGE(TAG, "SAMConfig failed");
-    this->mark_failed();
+    this->mark_failed(LOG_STR("SAMConfiguration command failed"));
     return;
   }
   if (!cmd_set_max_retries_()) {
-    ESP_LOGE(TAG, "RFConfiguration (MaxRetries) failed");
-    this->mark_failed();
+    this->mark_failed(LOG_STR("RFConfiguration (MaxRetries) command failed"));
     return;
   }
   this->initialized_ = true;

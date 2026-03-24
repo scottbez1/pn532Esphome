@@ -6,9 +6,11 @@
 #include "esphome/core/helpers.h"
 #include "esphome/core/log.h"
 
-// Seeed Studio PN532 library (https://github.com/Seeed-Studio/PN532)
-#include <PN532/PN532.h>
-#include <PN532_SPI/PN532_SPI.h>
+// Seeed Studio PN532 library (https://github.com/Seeed-Studio/PN532).
+// PlatformIO adds each source subdirectory to the include path, so flat
+// includes (without the folder prefix) are required.
+#include <PN532.h>
+#include <PN532_SPI.h>
 
 #include <string>
 

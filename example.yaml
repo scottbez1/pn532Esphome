@@ -1,7 +1,7 @@
 esphome:
   name: nfc-reader
   platform: ESP32
-  board: esp32dev
+  board: esp32-c3-devkitm-1
 
 wifi:
   ssid: !secret wifi_ssid
@@ -15,24 +15,24 @@ external_components:
   - source: .
     components: [pn532_spi]
 
-pn532_spi:
-  # SPI pins — adjust to match your wiring
-  cs_pin: GPIO5
-  clk_pin: GPIO18
-  miso_pin: GPIO19
-  mosi_pin: GPIO23
+# SPI bus — adjust pins to match your wiring
+spi:
+  clk_pin: GPIO6
+  miso_pin: GPIO5
+  mosi_pin: GPIO7
 
-  # How often to poll for a tag (default 150ms)
+pn532_spi:
+  cs_pin: GPIO10
+
+  # How often to poll for a tag (default 150 ms).
+  # With MaxRtyPassiveActivation=2, each poll completes in < 10 ms,
+  # so the main loop is nearly unaffected.
   update_interval: 150ms
 
   on_tag:
     - logger.log:
         format: "Tag presented: %s"
         args: ['uid.c_str()']
-    # Example: publish UID to an MQTT topic
-    # - mqtt.publish:
-    #     topic: nfc/tag
-    #     payload: !lambda 'return uid;'
 
   on_tag_removed:
     - logger.log: "Tag removed"

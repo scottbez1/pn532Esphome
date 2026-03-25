@@ -61,6 +61,7 @@ bool PN532SpiComponent::write_command_(const uint8_t *data, uint8_t len) {
   uint8_t dcs = static_cast<uint8_t>(~checksum + 1);
 
   this->enable();
+  delay(2);  // PN532 SPI requires ≥2 ms after CS assertion before first byte
   this->transfer_byte(SPI_DATAWRITE);
   this->transfer_byte(PREAMBLE);   // preamble
   this->transfer_byte(PREAMBLE);   // start code byte 1
@@ -83,6 +84,7 @@ bool PN532SpiComponent::read_ack_() {
   // ACK frame: 00 00 FF 00 FF 00
   static const uint8_t ACK[6] = {0x00, 0x00, 0xFF, 0x00, 0xFF, 0x00};
   this->enable();
+  delay(1);  // settling time after CS assertion
   this->transfer_byte(SPI_DATAREAD);
   bool ok = true;
   for (uint8_t expected : ACK)
@@ -98,6 +100,7 @@ bool PN532SpiComponent::read_response_(uint8_t cmd, uint8_t *buf, uint8_t max_le
     return false;
 
   this->enable();
+  delay(1);  // settling time after CS assertion
   this->transfer_byte(SPI_DATAREAD);
 
   // Validate preamble + start code
